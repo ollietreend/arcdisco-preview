@@ -40,7 +40,7 @@
     var track = dialog.querySelector('.lb-track');
     var imgs = Array.prototype.slice.call(dialog.querySelectorAll('.lb-stage img'));
     var counter = dialog.querySelector('.lb-count');
-    var shots = Array.prototype.slice.call(document.querySelectorAll('.gallery button'));
+    var shots = Array.prototype.slice.call(document.querySelectorAll('.gallery button, .photo-card'));
     var current = 0;
     var front = 0;
     var busy = false;
@@ -56,7 +56,7 @@
       var thumb = btn.querySelector('img');
       return {
         thumb: thumb ? thumb.getAttribute('src') : btn.getAttribute('data-full'),
-        full: btn.getAttribute('data-full'),
+        full: btn.getAttribute('data-full') || btn.getAttribute('href'),
         alt: thumb ? thumb.alt : ''
       };
     };
@@ -160,7 +160,8 @@
     };
 
     shots.forEach(function (btn, i) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', function (e) {
+        if (btn.tagName === 'A') e.preventDefault();
         lastFocus = btn;
         openAt(i);
       });

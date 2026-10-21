@@ -128,7 +128,7 @@ section{padding:clamp(3.25rem,6vw,5.5rem) 0}
 
 /* legacy inline photo runs, normalised at build time */
 .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem;margin:1.5rem 0}
-.photo-card{display:block;text-decoration:none;color:var(--muted);font-size:.75rem;line-height:1.4}
+.photo-card{display:block;text-decoration:none;color:var(--muted);font-size:.75rem;line-height:1.4;cursor:zoom-in}
 .photo-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;margin:0}
 .photo-card span{display:block;padding-top:.35rem}
 .badges{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin:1.5rem 0}
