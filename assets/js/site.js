@@ -209,6 +209,45 @@
       applyZoom(true);
     };
 
+    var dragY = 0;
+    var dismissByDrag = function (fromY) {
+      busy = true;
+      var anim = zoomEl.animate([
+        { transform: 'translate3d(0,' + fromY + 'px,0)', opacity: Math.max(0.35, 1 - fromY / 520) },
+        { transform: 'translate3d(0,110%,0)', opacity: 0 }
+      ], { duration: 220, easing: 'cubic-bezier(.32,.72,0,1)', fill: 'both' });
+      var done = false;
+      var finish = function () {
+        if (done) return;
+        done = true;
+        anim.cancel();
+        zoomEl.style.transform = '';
+        zoomEl.style.opacity = '';
+        busy = false;
+        dialog.close();
+      };
+      anim.onfinish = finish;
+      setTimeout(finish, 260);
+    };
+    var springBackY = function (fromY) {
+      busy = true;
+      var anim = zoomEl.animate([
+        { transform: 'translate3d(0,' + fromY + 'px,0)', opacity: Math.max(0.35, 1 - fromY / 520) },
+        { transform: 'translate3d(0,0,0)', opacity: 1 }
+      ], { duration: 200, easing: 'cubic-bezier(.2,.7,.2,1)' });
+      var done = false;
+      var finish = function () {
+        if (done) return;
+        done = true;
+        anim.cancel();
+        zoomEl.style.transform = '';
+        zoomEl.style.opacity = '';
+        busy = false;
+      };
+      anim.onfinish = finish;
+      setTimeout(finish, 240);
+    };
+
     stage.addEventListener('pointerdown', function (e) {
       if (e.target.closest('button') || busy || !dialog.open) return;
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -225,7 +264,7 @@
         };
         return;
       }
-      drag = { x: e.clientX, y: e.clientY, lastX: e.clientX, lastY: e.clientY, dir: 0 };
+      drag = { x: e.clientX, y: e.clientY, lastX: e.clientX, lastY: e.clientY, dir: 0, axis: '' };
       if (stage.setPointerCapture) { try { stage.setPointerCapture(e.pointerId); } catch (err) {} }
     });
 
@@ -256,10 +295,23 @@
       }
       var dx = e.clientX - drag.x;
       var dy = e.clientY - drag.y;
-      if (!drag.dir) {
-        if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) return;
-        drag.dir = dx < 0 ? 1 : -1;
-        parkNeighbour(drag.dir);
+      if (!drag.axis) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (dy > 0 && Math.abs(dy) > Math.abs(dx) * 1.15) {
+          drag.axis = 'v';
+        } else if (Math.abs(dx) > Math.abs(dy)) {
+          drag.axis = 'h';
+          drag.dir = dx < 0 ? 1 : -1;
+          parkNeighbour(drag.dir);
+        } else {
+          return;
+        }
+      }
+      if (drag.axis === 'v') {
+        dragY = dy;
+        zoomEl.style.transform = 'translate3d(0,' + dy + 'px,0)';
+        zoomEl.style.opacity = String(Math.max(0.35, 1 - dy / 520));
+        return;
       }
       setTrack(dx);
     });
@@ -291,6 +343,12 @@
         lastTap = now;
         tapX = e.clientX;
         tapY = e.clientY;
+      }
+      if (drag.axis === 'v') {
+        drag = null;
+        if (dy > 110) dismissByDrag(dy);
+        else springBackY(dy);
+        return;
       }
       if (z > 1.01) { drag = null; return; }
       var dir = drag.dir;
