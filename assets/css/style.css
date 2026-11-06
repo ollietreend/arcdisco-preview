@@ -137,6 +137,7 @@ section{padding:clamp(3.25rem,6vw,5.5rem) 0}
 .prose h4{margin:1.8rem 0 .4rem;font-size:1.12rem}
 .prose img{border-radius:10px;margin:1.6rem 0;width:100%;height:auto}
 .prose a{color:var(--gold-ink);text-decoration-thickness:1px;text-underline-offset:3px}
+#electricity{scroll-margin-top:6.5rem}
 .prose ul,.prose ol{padding-left:1.15rem;margin:0 0 1.2em}
 .prose li{margin-bottom:.45em}
 .prose blockquote{margin:0}
