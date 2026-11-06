@@ -433,3 +433,19 @@
   var y = document.getElementById('year');
   if (y) y.textContent = new Date().getFullYear();
 })();
+
+
+// Deep links: make fragment navigation land reliably, honouring the sticky header offset.
+(function () {
+  if (!location.hash || location.hash.length < 2) return;
+  var id;
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { return; }
+  var target = document.getElementById(id);
+  if (!target) return;
+  var jump = function () {
+    try { target.scrollIntoView({ behavior: 'instant', block: 'start' }); }
+    catch (e) { target.scrollIntoView({ block: 'start' }); }
+  };
+  if (document.readyState === 'complete') requestAnimationFrame(jump);
+  else window.addEventListener('load', function () { requestAnimationFrame(jump); });
+})();
